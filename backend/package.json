@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "description": "Teste de API com Cucumber",
+  "version": "1.0.0",
+  "main": "cypress.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Cypress",
+    "API"
+  ],
+  "author": "Ericton Brito",
+  "license": "MIT",
+  "dependencies": {
+    "cypress": "^14.1.0",
+    "cypress-cucumber-preprocessor": "^4.3.1",
+    "cypress-plugin-api": "^2.11.2"
+  },
+  "cypress-cucumber-preprocessor": {
+    "nonGlobalStepsDefinitions": false,
+    "step_definitions": "cypress/e2e/steps"
+  }
+}
