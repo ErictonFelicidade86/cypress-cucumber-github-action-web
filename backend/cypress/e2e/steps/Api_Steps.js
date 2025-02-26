@@ -1,43 +1,11 @@
 let userId;
 let token;
 let bookIds = [];
-const username = `testuser_${Date.now()}`; // Garante um usuário único
+const username = `testuser_${Date.now()}`; 
 const password = "Test@1234";
 
-// Verifica se o usuário existe e o exclui antes de criar um novo
 Given("I check if the user exists and delete if necessary", () => {
-  cy.api({
-    method: "POST",
-    url: "https://demoqa.com/Account/v1/GenerateToken",
-    body: { userName: username, password: password },
-    failOnStatusCode: false,
-  }).then((response) => {
-    if (response.status === 200) {
-      token = response.body.token;
-
-      // Obtém detalhes do usuário para capturar o ID antes de excluir
-      cy.api({
-        method: "GET",
-        url: `https://demoqa.com/Account/v1/User/${username}`,
-        headers: { Authorization: `Bearer ${token}` },
-        failOnStatusCode: false,
-      }).then((userResponse) => {
-        if (userResponse.status === 200) {
-          userId = userResponse.body.userID;
-
-          cy.api({
-            method: "DELETE",
-            url: `https://demoqa.com/Account/v1/User/${userId}`,
-            headers: { Authorization: `Bearer ${token}` },
-            failOnStatusCode: false,
-          }).then((deleteResponse) => {
-            expect(deleteResponse.status).to.be.oneOf([200, 204]);
-          });
-        }
-      });
-    }
-  });
-});
+  
 
 // Cria um novo usuário com reintentos caso falhe com erro 502
 function createUser(retries = 3) {
