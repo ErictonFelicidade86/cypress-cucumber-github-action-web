@@ -1,25 +1,38 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+Cypress.Commands.add("generateToken", (username, password) => {
+  return cy.api({
+    method: "POST",
+    url: "Account/v1/GenerateToken",
+    body: { userName: username, password: password },
+    failOnStatusCode: false,
+  }).then((response) => {
+    if (response.status === 200) {
+      return response.body.token;
+    }
+    return null;
+  });
+});
+
+Cypress.Commands.add("getUserId", (username, token) => {
+  return cy.api({
+    method: "GET",
+    url: `Account/v1/User/${username}`,
+    headers: { Authorization: `Bearer ${token}` },
+    failOnStatusCode: false,
+  }).then((response) => {
+    if (response.status === 200) {
+      return response.body.userID;
+    }
+    return null;
+  });
+});
+
+Cypress.Commands.add("deleteUser", (userId, token) => {
+  return cy.api({
+    method: "DELETE",
+    url: `Account/v1/User/${userId}`,
+    headers: { Authorization: `Bearer ${token}` },
+    failOnStatusCode: false,
+  }).then((response) => {
+    expect(response.status).to.be.oneOf([200, 204]);
+  });
+});
