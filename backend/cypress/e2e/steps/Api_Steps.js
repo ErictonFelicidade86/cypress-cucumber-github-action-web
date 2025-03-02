@@ -1,49 +1,30 @@
 let userId;
 let token;
 let bookIds = [];
-const username = `testuser_${Date.now()}`; // Garante um usuário único
+const username = `testuser${Date.now()}`;
 const password = "Test@1234";
 
-// Verifica se o usuário existe e o exclui antes de criar um novo
 Given("I check if the user exists and delete if necessary", () => {
-  cy.api({
-    method: "POST",
-    url: "https://demoqa.com/Account/v1/GenerateToken",
-    body: { userName: username, password: password },
-    failOnStatusCode: false,
-  }).then((response) => {
-    if (response.status === 200) {
-      token = response.body.token;
+  cy.generateToken(username, password).then((generatedToken) => {
+    token = generatedToken;
 
-      // Obtém detalhes do usuário para capturar o ID antes de excluir
-      cy.api({
-        method: "GET",
-        url: `https://demoqa.com/Account/v1/User/${username}`,
-        headers: { Authorization: `Bearer ${token}` },
-        failOnStatusCode: false,
-      }).then((userResponse) => {
-        if (userResponse.status === 200) {
-          userId = userResponse.body.userID;
+    if (token) {
+      cy.getUserId(username, token).then((retrievedUserId) => {
+        userId = retrievedUserId;
 
-          cy.api({
-            method: "DELETE",
-            url: `https://demoqa.com/Account/v1/User/${userId}`,
-            headers: { Authorization: `Bearer ${token}` },
-            failOnStatusCode: false,
-          }).then((deleteResponse) => {
-            expect(deleteResponse.status).to.be.oneOf([200, 204]);
-          });
+        if (userId) {
+          cy.deleteUser(userId, token);
         }
       });
     }
   });
 });
 
-// Cria um novo usuário com reintentos caso falhe com erro 502
+
 function createUser(retries = 3) {
   cy.api({
     method: "POST",
-    url: "https://demoqa.com/Account/v1/User",
+    url: "Account/v1/User",
     body: { userName: username, password: password },
     failOnStatusCode: false, 
   }).then((response) => {
@@ -68,7 +49,7 @@ Given("I create a new user", () => {
 When("I generate an access token", () => {
   cy.api({
     method: "POST",
-    url: "https://demoqa.com/Account/v1/GenerateToken",
+    url: "Account/v1/GenerateToken",
     body: { userName: username, password: password },
   }).then((response) => {
     expect(response.status).to.eq(200);
@@ -80,7 +61,7 @@ When("I generate an access token", () => {
 When("I verify the user is authorized", () => {
   cy.api({
     method: "POST",
-    url: "https://demoqa.com/Account/v1/Authorized",
+    url: "Account/v1/Authorized",
     body: { userName: username, password: password },
   }).then((response) => {
     expect(response.status).to.eq(200);
@@ -90,7 +71,7 @@ When("I verify the user is authorized", () => {
 
 // Obtém a lista de livros disponíveis
 Then("I fetch the list of available books", () => {
-  cy.api("GET", "https://demoqa.com/BookStore/v1/Books").then((response) => {
+  cy.api("GET", "BookStore/v1/Books").then((response) => {
     expect(response.status).to.eq(200);
     expect(response.body.books).to.not.be.empty;
     bookIds = response.body.books.slice(0, 2).map((book) => book.isbn);
@@ -106,7 +87,7 @@ When("I reserve two books of my choice", () => {
 
   cy.api({
     method: "POST",
-    url: "https://demoqa.com/BookStore/v1/Books",
+    url: "BookStore/v1/Books",
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -120,7 +101,7 @@ When("I reserve two books of my choice", () => {
 Then("I verify the user details with the reserved books", () => {
   cy.api({
     method: "GET",
-    url: `https://demoqa.com/Account/v1/User/${userId}`,
+    url: `Account/v1/User/${userId}`,
     headers: {
       Authorization: `Bearer ${token}`,
     },

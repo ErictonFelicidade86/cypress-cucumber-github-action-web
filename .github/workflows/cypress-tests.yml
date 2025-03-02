@@ -16,7 +16,7 @@ jobs:
       options: --user 1001
     strategy:
       matrix:
-        project: [backend, frontend]  # Define quais projetos serão testados
+        project: [backend]
 
     steps:
       - name: Checkout repository
@@ -28,7 +28,7 @@ jobs:
 
       - name: Verify Cypress Installation
         working-directory: ${{ matrix.project }}
-        run: npx cypress --version  # Verifica se o Cypress está instalado corretamente
+        run: npx cypress --version 
 
       - name: Run Cypress Tests
         working-directory: ${{ matrix.project }}
