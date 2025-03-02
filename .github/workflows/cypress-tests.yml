@@ -34,4 +34,4 @@ jobs:
         working-directory: ${{ matrix.project }}
         run: |
           echo "Rodando Cypress no projeto ${{ matrix.project }}"
-          ${{ github.event.inputs.cli }} --browser chrome --headless
+          ${{ github.event.inputs.cli }} --browser chrome --headless --spec "cypress/e2e/**/*.feature"
