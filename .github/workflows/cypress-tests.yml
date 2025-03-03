@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         working-directory: ${{ matrix.project }}
@@ -30,8 +30,17 @@ jobs:
         working-directory: ${{ matrix.project }}
         run: npx cypress --version 
 
+      - name: Debug Files (Verificar existência do cypress.config.js)
+        working-directory: ${{ matrix.project }}
+        run: ls -la
+
       - name: Run Cypress Tests
         working-directory: ${{ matrix.project }}
         run: |
           echo "Rodando Cypress no projeto ${{ matrix.project }}"
-          ${{ github.event.inputs.cli }} --browser chrome --headless --spec "cypress/e2e/**/*.feature"
+          if [ -f "cypress.config.js" ]; then
+            ${{ github.event.inputs.cli }} --browser chrome --headless --config-file cypress.config.js --spec "cypress/e2e/**/*.feature"
+          else
+            echo "ERRO: Arquivo cypress.config.js não encontrado no diretório ${{ matrix.project }}"
+            exit 1
+          fi
