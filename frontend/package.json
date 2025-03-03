@@ -1,0 +1,28 @@
+{
+  "name": "frontend",
+  "description": "Teste Frotend Cypress e Cucumber",
+  "version": "1.0.0",
+  "main": "cypress.config.js",
+  "scripts": {
+    "test": "npx cypress run"
+  },
+  "keywords": [
+    "Cypress",
+    "Cucumber",
+    "GitHub Actions"
+  ],
+  "author": "Ericton Brito",
+  "license": "MIT",
+  "dependencies": {
+    "cypress": "^14.1.0",
+    "cypress-cucumber-preprocessor": "^4.3.1",
+    "cypress-drag-drop": "^1.1.1",
+    "cypress-file-upload": "^5.0.8",
+    "cypress-real-events": "^1.14.0",
+    "cypress-xpath": "^2.0.1"
+  },
+  "cypress-cucumber-preprocessor": {
+    "nonGlobalStepsDefinitions": false,
+    "step_definitions": "cypress/e2e/steps"
+  }
+}
