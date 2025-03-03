@@ -1,4 +1,4 @@
-const { defineConfig } = require("Cypress");
+const { defineConfig } = require("cypress");
 const cucumber = require("cypress-cucumber-preprocessor").default
 
 module.exports = defineConfig({
